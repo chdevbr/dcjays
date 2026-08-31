@@ -4,15 +4,10 @@ import io.github.chdevbr.dcjays.model.Instrumento;
 import io.github.chdevbr.dcjays.model.Musica;
 import io.github.chdevbr.dcjays.service.CatalogoMusicas;
 import io.github.chdevbr.dcjays.service.MesaDJ;
+import io.github.chdevbr.dcjays.ui.RoundedButton;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedHashMap;
@@ -21,12 +16,22 @@ import java.util.Map;
 
 public class DJVisualController {
 
-    private static final Color FUNDO = new Color(24, 24, 28);
-    private static final Color PAINEL = new Color(36, 37, 43);
+    private static final Color FUNDO = Color.BLACK;
+    private static final Color PAINEL = Color.BLACK;
     private static final Color TEXTO = new Color(241, 241, 238);
-    private static final Color TEXTO_FRACO = new Color(176, 179, 184);
-    private static final Color VERDE = new Color(71, 201, 128);
     private static final Color VERMELHO = new Color(235, 103, 103);
+
+    private static final Color CREME =
+            new Color(236, 226, 199);
+
+    private static final Color DOURADO =
+            new Color(227, 174, 65);
+
+    private static final Color VERDE =
+            new Color(50, 84, 35);
+
+    private static final Color LARANJA =
+            new Color(230, 135, 50);
 
     private MesaDJ mesaDJ;
 
@@ -51,10 +56,34 @@ public class DJVisualController {
         SwingUtilities.invokeLater(this::criarJanela);
     }
 
+    private JLabel criarLogo() {
+
+        var url = getClass()
+                .getClassLoader()
+                .getResource("images/logo-dcjays.png");
+
+        if (url == null) {
+            return new JLabel("DCJAYS");
+        }
+
+        ImageIcon icone = new ImageIcon(url);
+
+        Image imagemRedimensionada =
+                icone.getImage().getScaledInstance(
+                        250,
+                        250,
+                        Image.SCALE_SMOOTH
+                );
+
+        return new JLabel(
+                new ImageIcon(imagemRedimensionada)
+        );
+    }
+
     private void criarJanela() {
-        janela = new JFrame("DCJAYS - GTA San Andreas Theme");
+        janela = new JFrame("DCJAYS - Grand Theft Auto Mixer");
         janela.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        janela.setMinimumSize(new Dimension(430, 350));
+        janela.setMinimumSize(new Dimension(900, 650));
         janela.setLocationByPlatform(true);
 
         janela.addWindowListener(new WindowAdapter() {
@@ -66,7 +95,7 @@ public class DJVisualController {
 
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBackground(DJVisualController.FUNDO);
-        raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        raiz.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         raiz.add(criarCabecalho(), BorderLayout.NORTH);
 
@@ -79,6 +108,11 @@ public class DJVisualController {
 
         janela.setContentPane(raiz);
         janela.pack();
+
+        janela.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        janela.setLocationRelativeTo(null);
+
         janela.setVisible(true);
 
         timer = new Timer(250, event -> atualizarStatus());
@@ -155,28 +189,66 @@ public class DJVisualController {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setOpaque(false);
 
-        JLabel titulo = new JLabel("DCJAYS");
-        titulo.setForeground(TEXTO);
-        titulo.setFont(
-            new Font(
-                Font.SANS_SERIF,
-                Font.BOLD,
-                28
-            )
+        JLabel logo = criarLogo();
+
+        JLabel subtitulo =
+                new JLabel("Grand Theft Auto Music Mixer");
+
+        subtitulo.setForeground(CREME);
+        subtitulo.setFont(
+                new Font(
+                        Font.SANS_SERIF,
+                        Font.BOLD,
+                        22
+                )
         );
 
         JLabel labelMusica =
                 new JLabel("Escolha uma música:");
 
-
-        labelMusica.setForeground(TEXTO_FRACO);
+        labelMusica.setForeground(CREME);
+        labelMusica.setFont(
+                new Font(
+                        Font.SANS_SERIF,
+                        Font.BOLD,
+                        18
+                )
+        );
 
         seletorMusicas =
                 new JComboBox<>(musicas.toArray(new Musica[0])
         );
 
+        seletorMusicas.setBackground(CREME);
+        seletorMusicas.setForeground(Color.BLACK);
+        seletorMusicas.setFont(
+                new Font(
+                        Font.SANS_SERIF,
+                        Font.BOLD,
+                        18
+                )
+        );
+        seletorMusicas.setPreferredSize(
+                new Dimension(400, 44)
+        );
+
         JButton carregar =
-                new JButton("Carregar música");
+                new RoundedButton("CARREGAR FAIXA", 14);
+
+        carregar.setBackground(DOURADO);
+        carregar.setForeground(Color.BLACK);
+        carregar.setFont(
+                new Font(
+                      Font.SANS_SERIF,
+                      Font.BOLD,
+                      14
+                )
+        );
+        carregar.setPreferredSize(
+                new Dimension(300, 48)
+        );
+
+        carregar.setFocusPainted(false);
 
         carregar.addActionListener(
                 event -> carregarMusica()
@@ -188,25 +260,38 @@ public class DJVisualController {
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
-        c.anchor = GridBagConstraints.WEST;
-        c.insets = new Insets(0, 0, 10, 0);
+        c.anchor = GridBagConstraints.CENTER;
+        c.insets = new Insets(0, 0, 8, 0);
 
-        painel.add(titulo, c);
+        painel.add(logo, c);
 
         c.gridy = 1;
+        c.insets = new Insets(0, 0, 18, 0);
+
+        painel.add(subtitulo, c);
+
+        c.gridy = 2;
+        c.gridx = 0;
         c.gridwidth = 1;
-        c.insets = new Insets(0, 0, 5, 10);
+        c.weightx = 0;
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(0, 0, 6, 12);
 
         painel.add(labelMusica, c);
 
         c.gridx = 1;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
 
         painel.add(seletorMusicas, c);
 
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 3;
         c.gridwidth = 2;
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(10, 0, 0, 0);
 
         painel.add(carregar, c);
 
@@ -216,10 +301,10 @@ public class DJVisualController {
     private JPanel criarListaInstrumentos() {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setBackground(PAINEL);
-        painel.setBorder(BorderFactory.createLineBorder(new Color(61, 63, 72)));
+        painel.setBorder(BorderFactory.createLineBorder(DOURADO, 2));
 
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(12, 12, 12, 12);
+        c.insets = new Insets(22, 20, 22, 20);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
 
@@ -229,12 +314,12 @@ public class DJVisualController {
             caixa.setSelected(!instrumento.isPausado());
             caixa.setOpaque(false);
             caixa.setForeground(TEXTO);
-            caixa.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+            caixa.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
             caixa.addActionListener(event -> alternarInstrumento(instrumento, caixa.isSelected()));
 
             JLabel textoStatus = new JLabel();
             textoStatus.setHorizontalAlignment(SwingConstants.RIGHT);
-            textoStatus.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+            textoStatus.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
 
             caixas.put(instrumento.getNome(), caixa);
             status.put(instrumento.getNome(), textoStatus);
@@ -267,22 +352,52 @@ public class DJVisualController {
 
         painelInstrumentos.revalidate();
         painelInstrumentos.repaint();
-
-        janela.pack();
     }
 
     private JPanel criarBotoes() {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setOpaque(false);
 
-        JButton tocarTodos = new JButton("Tocar todos");
+        Font fonteBotao =
+                new Font(
+                        Font.SANS_SERIF,
+                        Font.BOLD,
+                        17
+                );
+
+        Dimension tamanhoBotao =
+                new Dimension(220, 52);
+
+
+        RoundedButton tocarTodos = new RoundedButton("Tocar todos", 16);
         tocarTodos.addActionListener(event -> alterarTodas(true));
 
-        JButton pausarTodos = new JButton("Pausar todos");
+        tocarTodos.setBackground(VERDE);
+        tocarTodos.setForeground(CREME);
+        tocarTodos.setFocusPainted(false);
+        tocarTodos.setBorderPainted(false);
+        tocarTodos.setFont(fonteBotao);
+        tocarTodos.setPreferredSize(tamanhoBotao);
+
+        RoundedButton pausarTodos = new RoundedButton("Pausar todos", 16);
         pausarTodos.addActionListener(event -> alterarTodas(false));
 
-        JButton sair = new JButton("Sair");
+        pausarTodos.setBackground(LARANJA);
+        pausarTodos.setForeground(Color.BLACK);
+        pausarTodos.setFocusPainted(false);
+        pausarTodos.setBorderPainted(false);
+        pausarTodos.setFont(fonteBotao);
+        pausarTodos.setPreferredSize(tamanhoBotao);
+
+        RoundedButton sair = new RoundedButton("Sair", 16);
         sair.addActionListener(event -> encerrarAplicacao());
+
+        sair.setBackground(CREME);
+        sair.setForeground(Color.BLACK);
+        sair.setFocusPainted(false);
+        sair.setBorderPainted(false);
+        sair.setFont(fonteBotao);
+        sair.setPreferredSize(tamanhoBotao);
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(0, 4, 0, 4);
