@@ -1,17 +1,11 @@
 package io.github.chdevbr.dcjays.controller;
 
 import io.github.chdevbr.dcjays.model.Instrumento;
+import io.github.chdevbr.dcjays.model.Musica;
+import io.github.chdevbr.dcjays.service.CatalogoMusicas;
 import io.github.chdevbr.dcjays.service.MesaDJ;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,6 +16,7 @@ import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DJVisualController {
@@ -33,16 +28,24 @@ public class DJVisualController {
     private static final Color VERDE = new Color(71, 201, 128);
     private static final Color VERMELHO = new Color(235, 103, 103);
 
-    private final MesaDJ mesaDJ;
+    private MesaDJ mesaDJ;
+
+    private JComboBox<Musica> seletorMusicas;
+
+    private JPanel painelInstrumentos;
+
     private final Map<String, JCheckBox> caixas = new LinkedHashMap<>();
     private final Map<String, JLabel> status = new LinkedHashMap<>();
 
     private JFrame janela;
+
     private Timer timer;
 
-    public DJVisualController(MesaDJ mesaDJ) {
-        this.mesaDJ = mesaDJ;
-    }
+    private final CatalogoMusicas catalogoMusicas =
+            new CatalogoMusicas();
+
+    private final List<Musica> musicas =
+            catalogoMusicas.listar();
 
     public void iniciar() {
         SwingUtilities.invokeLater(this::criarJanela);
@@ -62,11 +65,16 @@ public class DJVisualController {
         });
 
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
-        raiz.setBackground(FUNDO);
+        raiz.setBackground(DJVisualController.FUNDO);
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         raiz.add(criarCabecalho(), BorderLayout.NORTH);
-        raiz.add(criarListaInstrumentos(), BorderLayout.CENTER);
+
+        painelInstrumentos = new JPanel(new BorderLayout());
+        painelInstrumentos.setOpaque(false);
+
+        raiz.add(painelInstrumentos, BorderLayout.CENTER);
+
         raiz.add(criarBotoes(), BorderLayout.SOUTH);
 
         janela.setContentPane(raiz);
@@ -77,19 +85,131 @@ public class DJVisualController {
         timer.start();
     }
 
+    private void carregarMusica() {
+
+        Musica musica =
+            (Musica) seletorMusicas.getSelectedItem();
+
+        if (musica == null) {
+            return;
+        }
+
+        new Thread(() -> {
+
+            try {
+
+                if (mesaDJ != null) {
+                    mesaDJ.encerrarTudo();
+                }
+
+                MesaDJ novaMesa = criarMesa(musica);
+
+                novaMesa.iniciar();
+
+                mesaDJ = novaMesa;
+
+                SwingUtilities.invokeLater(
+                        this::atualizarPainelInstrumentos
+                );
+
+            } catch (InterruptedException e) {
+
+                Thread.currentThread().interrupt();
+
+            }
+
+        }, "troca-musica").start();
+    }
+
+    private MesaDJ criarMesa(Musica musica) {
+
+        MesaDJ novaMesa = new MesaDJ();
+
+        String audio = musica.getPasta();
+
+        novaMesa.adicionarInstrumento(
+                "bateria",
+                audio + "bateria.wav"
+        );
+
+        novaMesa.adicionarInstrumento(
+                "baixo",
+                audio + "baixo.wav"
+        );
+
+        novaMesa.adicionarInstrumento(
+                "beat",
+                audio + "outro.wav"
+        );
+
+        novaMesa.adicionarInstrumento(
+                "vocal",
+                audio + "vocal.wav"
+        );
+
+        return novaMesa;
+    }
+
     private JPanel criarCabecalho() {
-        JPanel painel = new JPanel(new BorderLayout(0, 6));
+
+        JPanel painel = new JPanel(new GridBagLayout());
         painel.setOpaque(false);
 
         JLabel titulo = new JLabel("DCJAYS");
         titulo.setForeground(TEXTO);
-        titulo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 28));
+        titulo.setFont(
+            new Font(
+                Font.SANS_SERIF,
+                Font.BOLD,
+                28
+            )
+        );
 
-        JLabel subtitulo = new JLabel("Marque as faixas que você quer ouvir");
-        subtitulo.setForeground(TEXTO_FRACO);
+        JLabel labelMusica =
+                new JLabel("Escolha uma música:");
 
-        painel.add(titulo, BorderLayout.NORTH);
-        painel.add(subtitulo, BorderLayout.CENTER);
+
+        labelMusica.setForeground(TEXTO_FRACO);
+
+        seletorMusicas =
+                new JComboBox<>(musicas.toArray(new Musica[0])
+        );
+
+        JButton carregar =
+                new JButton("Carregar música");
+
+        carregar.addActionListener(
+                event -> carregarMusica()
+        );
+
+        GridBagConstraints c =
+                new GridBagConstraints();
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.anchor = GridBagConstraints.WEST;
+        c.insets = new Insets(0, 0, 10, 0);
+
+        painel.add(titulo, c);
+
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.insets = new Insets(0, 0, 5, 10);
+
+        painel.add(labelMusica, c);
+
+        c.gridx = 1;
+
+        painel.add(seletorMusicas, c);
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        painel.add(carregar, c);
+
         return painel;
     }
 
@@ -133,6 +253,24 @@ public class DJVisualController {
         return painel;
     }
 
+    private void atualizarPainelInstrumentos() {
+
+        painelInstrumentos.removeAll();
+
+        caixas.clear();
+        status.clear();
+
+        painelInstrumentos.add(
+            criarListaInstrumentos(),
+            BorderLayout.CENTER
+        );
+
+        painelInstrumentos.revalidate();
+        painelInstrumentos.repaint();
+
+        janela.pack();
+    }
+
     private JPanel criarBotoes() {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setOpaque(false);
@@ -172,6 +310,11 @@ public class DJVisualController {
     }
 
     private void alterarTodas(boolean tocar) {
+
+        if (mesaDJ == null) {
+            return;
+        }
+
         for (Instrumento instrumento : mesaDJ.listarInstrumentos()) {
             if (tocar) {
                 mesaDJ.retomar(instrumento.getNome());
@@ -184,6 +327,11 @@ public class DJVisualController {
     }
 
     private void atualizarStatus() {
+
+        if (mesaDJ == null) {
+            return;
+        }
+
         for (Instrumento instrumento : mesaDJ.listarInstrumentos()) {
             boolean tocando = !instrumento.isPausado() && !instrumento.isEncerrado();
 
@@ -207,13 +355,21 @@ public class DJVisualController {
 
         new Thread(() -> {
             try {
-                mesaDJ.encerrarTudo();
+
+                if (mesaDJ != null) {
+                    mesaDJ.encerrarTudo();
+                }
+
             } catch (InterruptedException e) {
+
                 Thread.currentThread().interrupt();
+
             } finally {
+
                 SwingUtilities.invokeLater(() -> {
                     janela.dispose();
                     System.exit(0);
+
                 });
             }
         }, "encerramento").start();
