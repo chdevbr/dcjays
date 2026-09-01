@@ -1,0 +1,47 @@
+- main [ref=e2]:
+  - region [ref=e3]:
+    - img "DCJAYS" [ref=e5]
+    - generic [ref=e6]:
+      - paragraph [ref=e7]: Mesa local conectada ao Java
+      - heading "DCJAYS" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Controle os stems em tempo real sem perder a sincronia das threads.
+    - generic [ref=e10]:
+      - generic [ref=e11]: Agora
+      - strong [ref=e12]: It Was a Good Day
+  - region "Carregamento de musica" [ref=e13]:
+    - generic [ref=e14]: Escolha uma musica
+    - generic [ref=e15]:
+      - combobox "Escolha uma musica" [ref=e16]:
+        - option "It Was a Good Day" [selected]
+        - option "GTA San Andreas Theme"
+      - button "Carregar faixa" [ref=e17] [cursor=pointer]
+  - region "Faixas da mesa" [ref=e18]:
+    - article [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]: FAIXA 01
+        - heading "Bateria" [level=2] [ref=e22]
+        - generic [ref=e23]: Tocando
+      - button "Silenciar" [ref=e30] [cursor=pointer]
+    - article [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e33]: FAIXA 02
+        - heading "Baixo" [level=2] [ref=e34]
+        - generic [ref=e35]: Tocando
+      - button "Silenciar" [ref=e42] [cursor=pointer]
+    - article [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]: FAIXA 03
+        - heading "Beat" [level=2] [ref=e46]
+        - generic [ref=e47]: Tocando
+      - button "Silenciar" [ref=e54] [cursor=pointer]
+    - article [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]: FAIXA 04
+        - heading "Vocal" [level=2] [ref=e58]
+        - generic [ref=e59]: Tocando
+      - button "Silenciar" [ref=e66] [cursor=pointer]
+  - region "Controles globais" [ref=e67]:
+    - button "Tocar todos" [ref=e68] [cursor=pointer]
+    - button "Pausar todos" [ref=e69] [cursor=pointer]
+    - button "Encerrar" [ref=e70] [cursor=pointer]
+  - status [ref=e71]: Mesa sincronizada.

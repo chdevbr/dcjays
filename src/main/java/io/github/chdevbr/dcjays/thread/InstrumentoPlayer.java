@@ -1,6 +1,7 @@
 package io.github.chdevbr.dcjays.thread;
 
 import io.github.chdevbr.dcjays.model.Instrumento;
+import io.github.chdevbr.dcjays.web.RecursoAplicacao;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -8,7 +9,6 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -94,14 +94,8 @@ public class InstrumentoPlayer implements Runnable {
     }
 
     private Clip carregarClip() throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream recurso = classLoader.getResourceAsStream(instrumento.getCaminhoAudio());
-
-        if (recurso == null) {
-            throw new IOException("arquivo não encontrado no classpath");
-        }
-
-        try (InputStream buffer = new BufferedInputStream(recurso);
+        try (InputStream recurso = RecursoAplicacao.abrir(instrumento.getCaminhoAudio());
+             InputStream buffer = new BufferedInputStream(recurso);
              AudioInputStream audio = AudioSystem.getAudioInputStream(buffer)) {
             Clip clip = AudioSystem.getClip();
             clip.open(audio);

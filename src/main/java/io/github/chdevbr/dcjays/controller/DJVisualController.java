@@ -8,6 +8,8 @@ import io.github.chdevbr.dcjays.ui.RoundedButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedHashMap;
@@ -46,6 +48,12 @@ public class DJVisualController {
 
     private Timer timer;
 
+    private Image imagemLogo;
+
+    private JLabel logo;
+
+    private JPanel raiz;
+
     private final CatalogoMusicas catalogoMusicas =
             new CatalogoMusicas();
 
@@ -67,23 +75,27 @@ public class DJVisualController {
         }
 
         ImageIcon icone = new ImageIcon(url);
+        imagemLogo = icone.getImage();
 
         Image imagemRedimensionada =
-                icone.getImage().getScaledInstance(
-                        250,
-                        250,
+                imagemLogo.getScaledInstance(
+                        190,
+                        190,
                         Image.SCALE_SMOOTH
                 );
 
-        return new JLabel(
+        logo = new JLabel(
                 new ImageIcon(imagemRedimensionada)
         );
+
+        return logo;
     }
 
     private void criarJanela() {
         janela = new JFrame("DCJAYS - Grand Theft Auto Mixer");
         janela.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        janela.setMinimumSize(new Dimension(900, 650));
+        janela.setMinimumSize(new Dimension(560, 520));
+        janela.setPreferredSize(new Dimension(980, 720));
         janela.setLocationByPlatform(true);
 
         janela.addWindowListener(new WindowAdapter() {
@@ -93,9 +105,16 @@ public class DJVisualController {
             }
         });
 
-        JPanel raiz = new JPanel(new BorderLayout(16, 16));
+        janela.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                atualizarEscalaInterface();
+            }
+        });
+
+        raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBackground(DJVisualController.FUNDO);
-        raiz.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        raiz.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
 
         raiz.add(criarCabecalho(), BorderLayout.NORTH);
 
@@ -109,14 +128,49 @@ public class DJVisualController {
         janela.setContentPane(raiz);
         janela.pack();
 
-        janela.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         janela.setLocationRelativeTo(null);
 
         janela.setVisible(true);
+        atualizarEscalaInterface();
 
         timer = new Timer(250, event -> atualizarStatus());
         timer.start();
+    }
+
+    private void atualizarEscalaInterface() {
+        if (janela == null || raiz == null) {
+            return;
+        }
+
+        int altura = janela.getHeight();
+        int largura = janela.getWidth();
+
+        int margemVertical = altura < 620 ? 12 : 20;
+        int margemHorizontal = largura < 700 ? 14 : 24;
+
+        raiz.setBorder(BorderFactory.createEmptyBorder(
+                margemVertical,
+                margemHorizontal,
+                margemVertical,
+                margemHorizontal
+        ));
+
+        if (imagemLogo != null && logo != null) {
+            int tamanhoLogo = altura < 620 || largura < 700
+                    ? 130
+                    : altura < 760 ? 160 : 190;
+
+            Image imagemRedimensionada = imagemLogo.getScaledInstance(
+                    tamanhoLogo,
+                    tamanhoLogo,
+                    Image.SCALE_SMOOTH
+            );
+
+            logo.setIcon(new ImageIcon(imagemRedimensionada));
+        }
+
+        raiz.revalidate();
+        raiz.repaint();
     }
 
     private void carregarMusica() {
@@ -199,7 +253,7 @@ public class DJVisualController {
                 new Font(
                         Font.SANS_SERIF,
                         Font.BOLD,
-                        22
+                        20
                 )
         );
 
@@ -211,7 +265,7 @@ public class DJVisualController {
                 new Font(
                         Font.SANS_SERIF,
                         Font.BOLD,
-                        18
+                        16
                 )
         );
 
@@ -225,11 +279,14 @@ public class DJVisualController {
                 new Font(
                         Font.SANS_SERIF,
                         Font.BOLD,
-                        18
+                        16
                 )
         );
+        seletorMusicas.setMinimumSize(
+                new Dimension(220, 40)
+        );
         seletorMusicas.setPreferredSize(
-                new Dimension(400, 44)
+                new Dimension(320, 40)
         );
 
         JButton carregar =
@@ -241,11 +298,14 @@ public class DJVisualController {
                 new Font(
                       Font.SANS_SERIF,
                       Font.BOLD,
-                      14
+                      13
                 )
         );
+        carregar.setMinimumSize(
+                new Dimension(180, 44)
+        );
         carregar.setPreferredSize(
-                new Dimension(300, 48)
+                new Dimension(260, 44)
         );
 
         carregar.setFocusPainted(false);
@@ -261,12 +321,12 @@ public class DJVisualController {
         c.gridy = 0;
         c.gridwidth = 2;
         c.anchor = GridBagConstraints.CENTER;
-        c.insets = new Insets(0, 0, 8, 0);
+        c.insets = new Insets(0, 0, 6, 0);
 
         painel.add(logo, c);
 
         c.gridy = 1;
-        c.insets = new Insets(0, 0, 18, 0);
+        c.insets = new Insets(0, 0, 14, 0);
 
         painel.add(subtitulo, c);
 
@@ -304,7 +364,7 @@ public class DJVisualController {
         painel.setBorder(BorderFactory.createLineBorder(DOURADO, 2));
 
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(22, 20, 22, 20);
+        c.insets = new Insets(16, 18, 16, 18);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
 
@@ -314,18 +374,19 @@ public class DJVisualController {
             caixa.setSelected(!instrumento.isPausado());
             caixa.setOpaque(false);
             caixa.setForeground(TEXTO);
-            caixa.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+            caixa.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
             caixa.addActionListener(event -> alternarInstrumento(instrumento, caixa.isSelected()));
 
             JLabel textoStatus = new JLabel();
             textoStatus.setHorizontalAlignment(SwingConstants.RIGHT);
-            textoStatus.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+            textoStatus.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
 
             caixas.put(instrumento.getNome(), caixa);
             status.put(instrumento.getNome(), textoStatus);
 
             c.gridy = linha;
             c.gridx = 0;
+            c.weightx = 1;
             painel.add(caixa, c);
 
             c.gridx = 1;
@@ -345,28 +406,32 @@ public class DJVisualController {
         caixas.clear();
         status.clear();
 
-        painelInstrumentos.add(
-            criarListaInstrumentos(),
-            BorderLayout.CENTER
-        );
+        JScrollPane rolagem = new JScrollPane(criarListaInstrumentos());
+        rolagem.setBorder(null);
+        rolagem.setOpaque(false);
+        rolagem.getViewport().setOpaque(false);
+        rolagem.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        rolagem.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        painelInstrumentos.add(rolagem, BorderLayout.CENTER);
 
         painelInstrumentos.revalidate();
         painelInstrumentos.repaint();
     }
 
     private JPanel criarBotoes() {
-        JPanel painel = new JPanel(new GridBagLayout());
+        JPanel painel = new JPanel(new GridLayout(1, 3, 8, 0));
         painel.setOpaque(false);
 
         Font fonteBotao =
                 new Font(
                         Font.SANS_SERIF,
                         Font.BOLD,
-                        17
+                        15
                 );
 
         Dimension tamanhoBotao =
-                new Dimension(220, 52);
+                new Dimension(140, 48);
 
 
         RoundedButton tocarTodos = new RoundedButton("Tocar todos", 16);
@@ -399,17 +464,9 @@ public class DJVisualController {
         sair.setFont(fonteBotao);
         sair.setPreferredSize(tamanhoBotao);
 
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(0, 4, 0, 4);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1;
-
-        c.gridx = 0;
-        painel.add(tocarTodos, c);
-        c.gridx = 1;
-        painel.add(pausarTodos, c);
-        c.gridx = 2;
-        painel.add(sair, c);
+        painel.add(tocarTodos);
+        painel.add(pausarTodos);
+        painel.add(sair);
 
         return painel;
     }

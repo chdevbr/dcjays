@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCJAYS - Grand Theft Auto Mixer</title>
+    <link rel="icon" href="/images/logo-dcjays.png" type="image/png">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="hero panel" aria-labelledby="titulo-app">
+            <div class="brand-mark">
+                <img src="/images/logo-dcjays.png" alt="DCJAYS">
+            </div>
+
+            <div class="hero-copy">
+                <p class="eyebrow">Mesa local conectada ao Java</p>
+                <h1 id="titulo-app">DCJAYS</h1>
+                <p class="subtitle">Controle os stems em tempo real sem perder a sincronia das threads.</p>
+            </div>
+
+            <div class="now-playing" aria-live="polite">
+                <div class="album-stack" aria-hidden="true">
+                    <div class="vinyl"><span></span></div>
+                    <div class="album-art">
+                        <span>ICE CUBE</span>
+                        <i></i>
+                    </div>
+                </div>
+                <div class="now-playing-copy">
+                    <span class="now-label">Reprodução Atual</span>
+                    <strong id="musica-atual">Nenhuma faixa carregada</strong>
+                    <div class="playback-progress" role="progressbar" aria-label="Progresso da faixa" aria-valuemin="0" aria-valuemax="100" aria-valuenow="78">
+                        <span></span>
+                    </div>
+                    <div class="playback-times" aria-hidden="true">
+                        <span>3:20</span>
+                        <span>4:15</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="control-bar panel" aria-label="Carregamento de música">
+            <label for="seletor-musicas">Escolha uma música</label>
+            <div class="load-row">
+                <div class="select-shell">
+                    <span class="disc-icon" aria-hidden="true"></span>
+                    <select id="seletor-musicas"></select>
+                </div>
+                <button class="primary-action" id="carregar-faixa" type="button">Carregar faixa</button>
+            </div>
+        </section>
+
+        <section class="mixer-grid" id="lista-instrumentos" aria-label="Faixas da mesa">
+            <article class="empty-state">
+                <span>Pronto para carregar</span>
+                <strong>Escolha uma musica para abrir os controles.</strong>
+            </article>
+        </section>
+
+        <footer class="status-bar panel" aria-label="Status do sistema">
+            <span class="status-item status-threads"><i aria-hidden="true">&#9881;</i> Threads: <strong>Sincronizadas (OK)</strong></span>
+            <span class="status-separator" aria-hidden="true"></span>
+            <span class="status-item">Conexão Java: <strong>Ativa (OK)</strong></span>
+            <span class="status-separator" aria-hidden="true"></span>
+            <span class="status-item">Latência: <strong>4ms</strong></span>
+        </footer>
+
+        <section class="global-actions" aria-label="Controles globais">
+            <button class="action play" id="tocar-todos" type="button"><span aria-hidden="true">&#9654;</span> Tocar todos</button>
+            <button class="action pause" id="pausar-todos" type="button"><span aria-hidden="true">&#10074;&#10074;</span> Pausar todos</button>
+            <button class="action stop" id="encerrar-mesa" type="button"><span aria-hidden="true">&#9632;</span> Encerrar</button>
+        </section>
+
+        <p class="sr-only" id="mensagem" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="/app.js"></script>
+</body>
+</html>
